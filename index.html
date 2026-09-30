@@ -3208,18 +3208,63 @@ function renderAuthScreen(){
 }
 async function submitSignup(){
   if(!CLOUD) return submitSignupLocal();
-  const v=id=>document.getElementById(id).value.trim(); const name=v('su-name'),username=v('su-username'),email=v('su-email').toLowerCase(),pw=document.getElementById('su-password').value,cf=document.getElementById('su-confirm').value;
-  if(!name||!username||!email||!pw) return setAuthMsg('Please fill in every field.');
-  if(!isValidEmail(email)) return setAuthMsg('Enter a valid email address.');
-  if(pw.length<8) return setAuthMsg('Password must be at least 8 characters.');
-  if(pw!==cf) return setAuthMsg('Passwords do not match.');
+
+  const v=id=>document.getElementById(id).value.trim();
+  const name=v('su-name');
+  const username=v('su-username');
+  const email=v('su-email').toLowerCase();
+  const pw=document.getElementById('su-password').value;
+  const cf=document.getElementById('su-confirm').value;
+
+  if(!name||!username||!email||!pw)
+    return setAuthMsg('Please fill in every field.');
+
+  if(!isValidEmail(email))
+    return setAuthMsg('Enter a valid email address.');
+
+  if(pw.length<8)
+    return setAuthMsg('Password must be at least 8 characters.');
+
+  if(pw!==cf)
+    return setAuthMsg('Passwords do not match.');
+
   try{
-    const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:{name,username}}});
+    const redirectUrl =
+      'https://megladon222cgbcv-ship-it.github.io/lumio/';
+
+    const {data,error}=await sb.auth.signUp({
+      email,
+      password:pw,
+      options:{
+        emailRedirectTo: redirectUrl,
+        data:{
+          name,
+          username
+        }
+      }
+    });
+
     if(error) return setAuthMsg(authNet(error));
-    if(data.session){ await sb.auth.signOut(); return setAuthMsg('Email confirmation is turned off in your Supabase project, so this email was not verified. Enable "Confirm email" and try again.'); }
-    if(data.user && data.user.identities && !data.user.identities.length) return setAuthMsg('An account with this email already exists. Try logging in.');
-    pendingEmail=email; resendAt=Date.now()+60000; authView='verify'; authError=''; renderAuthScreen();
-  }catch(e){ setAuthMsg(authNet(e)); }
+
+    if(data.session){
+      await sb.auth.signOut();
+      return setAuthMsg(
+        'Email confirmation is turned off in your Supabase project, so this email was not verified. Enable "Confirm email" and try again.'
+      );
+    }
+
+    if(data.user && data.user.identities && !data.user.identities.length)
+      return setAuthMsg('An account with this email already exists. Try logging in.');
+
+    pendingEmail=email;
+    resendAt=Date.now()+60000;
+    authView='verify';
+    authError='';
+    renderAuthScreen();
+
+  }catch(e){
+    setAuthMsg(authNet(e));
+  }
 }
 async function cloudVerify(){
   const token=document.getElementById('otp').value.trim(); if(!token) return setAuthMsg('Enter the code from your email.');
