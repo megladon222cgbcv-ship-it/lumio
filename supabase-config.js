@@ -1,2 +1,7 @@
-// Paste your PUBLIC Supabase values here (anon/publishable key only — never the service_role key).
-window.LUMIO_CONFIG = { supabaseUrl: "https://tanljcrqxtkmhsjzejnn.supabase.co", supabaseAnonKey: "sb_publishable_x0Q3EGyhFcM97qVmgRWZ-g_X-rD7Pum" };
+
+// Public Supabase configuration
+// Never put a service_role or secret key here.
+window.LUMIO_CONFIG = {
+  supabaseUrl: "https://buapmocmmjsgbultemwk.supabase.co",
+  supabaseAnonKey: "sb_publishable_FDMPkf_7V8ml8N4_MHxCkw_CjuzWPJ-"
+};
